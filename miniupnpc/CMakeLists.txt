@@ -16,7 +16,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 option (UPNPC_BUILD_STATIC "Build static library" TRUE)
-option (UPNPC_BUILD_SHARED "Build shared library" TRUE)
+option (UPNPC_BUILD_SHARED "Build shared library" FALSE)
 if (NOT WIN32)
   option (UPNPC_BUILD_TESTS "Build test executables" TRUE)
 endif (NOT WIN32)
@@ -32,7 +32,7 @@ if (NOT WIN32)
   add_definitions (-DMINIUPNPC_SET_SOCKET_TIMEOUT)
   add_definitions (-D_BSD_SOURCE -D_POSIX_C_SOURCE=200112L)
 else (NOT WIN32)
-  add_definitions (-D_WIN32_WINNT=0x0501) # XP or higher for getnameinfo and friends
+  add_definitions (-D_WIN32_WINNT=0x0501 -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS) # XP or higher for getnameinfo and friends
 endif (NOT WIN32)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -62,7 +62,7 @@ if (CMAKE_COMPILER_IS_GNUC)
   endif (NOT CONFIGURED)
 endif ()
 
-configure_file (${CMAKE_SOURCE_DIR}/miniupnpcstrings.h.cmake ${CMAKE_BINARY_DIR}/miniupnpcstrings.h)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/miniupnpcstrings.h.cmake ${CMAKE_BINARY_DIR}/miniupnpcstrings.h)
 include_directories (${CMAKE_BINARY_DIR})
 
 set (MINIUPNPC_SOURCES
@@ -91,10 +91,8 @@ if (WIN32)
   )
 endif (WIN32)
 
-if (WIN32)
-  find_library (WINSOCK2_LIBRARY NAMES ws2_32 WS2_32 Ws2_32)
-  find_library (IPHLPAPI_LIBRARY NAMES iphlpapi)
-  set (LDLIBS ${WINSOCK2_LIBRARY} ${IPHLPAPI_LIBRARY} ${LDLIBS})
+if (WIN32)  
+  set (LDLIBS ws2_32.lib iphlpapi.lib ${LDLIBS})
 #elseif (CMAKE_SYSTEM_NAME STREQUAL "Solaris")
 #  find_library (SOCKET_LIBRARY NAMES socket)
 #  find_library (NSL_LIBRARY NAMES nsl)
