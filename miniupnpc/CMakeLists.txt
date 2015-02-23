@@ -84,13 +84,6 @@ if (NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "AmigaOS")
   set (MINIUPNPC_SOURCES ${MINIUPNPC_SOURCES} minissdpc.c)
 endif (NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "AmigaOS")
 
-if (WIN32)
-  set_source_files_properties (${MINIUPNPC_SOURCES} PROPERTIES
-                                                    COMPILE_DEFINITIONS MINIUPNP_STATICLIB
-                                                    COMPILE_DEFINITIONS MINIUPNP_EXPORTS
-  )
-endif (WIN32)
-
 if (WIN32)  
   set (LDLIBS ws2_32.lib iphlpapi.lib ${LDLIBS})
 #elseif (CMAKE_SYSTEM_NAME STREQUAL "Solaris")
@@ -105,6 +98,7 @@ if (NOT UPNPC_BUILD_STATIC AND NOT UPNPC_BUILD_SHARED)
 endif (NOT UPNPC_BUILD_STATIC AND NOT UPNPC_BUILD_SHARED)
 
 if (UPNPC_BUILD_STATIC)
+ set_source_files_properties (${MINIUPNPC_SOURCES} PROPERTIES COMPILE_DEFINITIONS MINIUPNP_STATICLIB)
   add_library (upnpc-static STATIC ${MINIUPNPC_SOURCES})
   set_target_properties (upnpc-static PROPERTIES OUTPUT_NAME "miniupnpc")
   target_link_libraries (upnpc-static ${LDLIBS})
@@ -113,6 +107,7 @@ if (UPNPC_BUILD_STATIC)
 endif (UPNPC_BUILD_STATIC)
 
 if (UPNPC_BUILD_SHARED)
+  set_source_files_properties (${MINIUPNPC_SOURCES} PROPERTIES COMPILE_DEFINITIONS MINIUPNP_EXPORTS)
   add_library (upnpc-shared SHARED ${MINIUPNPC_SOURCES})
   set_target_properties (upnpc-shared PROPERTIES OUTPUT_NAME "miniupnpc")
   set_target_properties (upnpc-shared PROPERTIES VERSION ${MINIUPNPC_VERSION})
